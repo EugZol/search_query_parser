@@ -9,7 +9,7 @@ See for reference:
 
 Example:
 
-```
+```ruby
 require 'search_query_parser'
 
 q = SearchQueryParser.to_ts_query("
@@ -34,7 +34,7 @@ When you use PostgreSQL full-text search you want your users to be able to utili
 
 Unfortunately, you can't use Postgres' `plain_tosquery` ([link](https://www.postgresql.org/docs/9.6/static/functions-textsearch.html)) function for that, which would be the closest match to our goal. If you give the string `cates & !dogs` to `plainto_tsquery`, the result will be:
 
-```
+```sql
 => select plainto_tsquery('cats & !dogs');
  plainto_tsquery
 -----------------
@@ -51,7 +51,7 @@ Use `SearchQueryParser.to_ts_query(q)` to produce PostgreSQL-compatible expressi
 
 Use it in your Rails finders for models with `tsdata` columns like that:
 
-```
+```ruby
 q = SearchQueryParser.to_ts_query('кошки & !собаки', 'russian')
 Document.where("tsdata @@ #{q}")
 ```
