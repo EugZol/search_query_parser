@@ -19,15 +19,19 @@ describe SearchQueryParser::Grammar do
     end
 
     it 'removes several spaces and non-al-num in a row' do
-      expect(@f.("  too  many   * spaces$( )*  \t")).to eq 'too many spaces()'
+      expect(@f.("  too  many   * spaces$#(  )*  \t")).to eq 'too many spaces ()'
     end
 
     it 'changes && to & and || to |, removing extra spaces' do
       expect(@f.("a && b || c d")).to eq 'a&b|c d'
     end
 
-    it 'removes spaces at brackets' do
-      expect(@f.("(a b  ) \t(c& d )(e) (   f")).to eq "(a b)(c&d)(e)(f"
+    it 'removes spaces at brackets correctly' do
+      expect(@f.("(a b  ) \t(c& d )(e) (   f")).to eq "(a b) (c&d)(e) (f"
+    end
+
+    it 'cleans up complex expressions' do
+      expect(@f.("cats !dogs !собаки || (birds & птицы*  ) ^")).to eq "cats !dogs !собаки|(birds&птицы)"
     end
   end
 

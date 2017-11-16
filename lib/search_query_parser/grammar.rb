@@ -7,8 +7,10 @@ module SearchQueryParser
         gsub(/[^[:alnum:]\-()&|!]+/, ' ').
         gsub(/([^[:alnum:]]|^)\-/, '\1').
         gsub(/\-([^[:alnum:]]|$)/, '\1').
-        gsub(/ ?([|&!]) /, '\1').
-        gsub(/ ?([()]) ?/, '\1').
+        gsub(/ ?([|&]) ?/, '\1').
+        gsub(/(!) /, '\1').
+        gsub(/(\() /, '\1').
+        gsub(/ (\))/, '\1').
         strip
     end
 

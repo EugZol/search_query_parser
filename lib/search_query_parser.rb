@@ -4,6 +4,10 @@ require "search_query_parser/interpreter"
 module SearchQueryParser
   @interpreter = SearchQueryParser::Interpreter.new
 
+  def self.to_string(str)
+    @interpreter.parse(str).to_s
+  end
+
   def self.to_ts_query(str, language = 'english', prefix = true)
     language = language.gsub(/[^a-zA-Z\-]/, '')
     @interpreter.parse(str).reduce do |op, x, y|
