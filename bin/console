@@ -14,6 +14,9 @@ require "search_query_parser/interpreter"
 
 G = SearchQueryParser::Grammar
 I = SearchQueryParser::Interpreter
+T = SearchQueryParser.method(:to_ts_query)
+
+puts "G: Grammar (new, &, |, etc.), I: Interpreter (#parse), T.(): #to_ts_query"
 
 require "irb"
 IRB.start(__FILE__)

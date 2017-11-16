@@ -14,11 +14,12 @@ class SearchQueryParser::ParseError < ArgumentError; end
 module SearchQueryParser
   class Interpreter < Racc::Parser
 
-module_eval(<<'...end interpreter.y/module_eval...', 'interpreter.y', 24)
+module_eval(<<'...end interpreter.y/module_eval...', 'interpreter.y', 26)
 
   def parse(str)
     @q = []
-    str.scan(/[[:alnum:]\-]+|[&|()\s]/) do |token|
+    str = SearchQueryParser::Grammar.prepare_text(str)
+    str.scan(/[[:alnum:]\-]+|[&|()!\s]/) do |token|
       case token
       when /[[:alnum:]\-]+/
         @q.push [:TERM, SearchQueryParser::Grammar.new(token)]
@@ -44,28 +45,30 @@ module_eval(<<'...end interpreter.y/module_eval...', 'interpreter.y', 24)
 ##### State transition tables begin ###
 
 racc_action_table = [
-     8,     6,     7,    10,    14,     8,     6,     7,     3,     3,
-     4,     4,     3,     3,     4,     4,     3,     5,     4,     8,
-     6,     8 ]
+     4,     4,     9,     7,     3,     3,     5,     5,     4,     4,
+     6,     9,     3,     3,     5,     5,     4,     4,    12,   nil,
+     3,     3,     5,     5,     9,     7,     8,   nil,    16,     9,
+     7,     8 ]
 
 racc_action_check = [
-     9,     9,     9,     5,     9,     2,     2,     2,     3,     0,
-     3,     0,     6,     7,     6,     7,     8,     1,     8,    12,
-    12,    11 ]
+     0,     3,    14,    14,     0,     3,     0,     3,     4,     7,
+     1,    13,     4,     7,     4,     7,     8,     9,     6,   nil,
+     8,     9,     8,     9,    10,    10,    10,   nil,    10,     2,
+     2,     2 ]
 
 racc_action_pointer = [
-     4,    17,     3,     3,   nil,     3,     7,     8,    11,    -2,
-   nil,    19,    17,   nil,   nil ]
+    -2,    10,    26,    -1,     6,   nil,    18,     7,    14,    15,
+    21,   nil,   nil,     8,    -1,   nil,   nil ]
 
 racc_action_default = [
-    -7,    -7,    -1,    -7,    -6,    -7,    -7,    -7,    -7,    -7,
-    15,    -2,    -3,    -4,    -5 ]
+    -8,    -8,    -1,    -8,    -8,    -7,    -8,    -8,    -8,    -8,
+    -8,    -6,    17,    -2,    -3,    -4,    -5 ]
 
 racc_goto_table = [
-     2,     1,   nil,     9,   nil,   nil,    11,    12,    13 ]
+     2,     1,   nil,    10,    11,   nil,   nil,    13,    14,    15 ]
 
 racc_goto_check = [
-     2,     1,   nil,     2,   nil,   nil,     2,     2,     2 ]
+     2,     1,   nil,     2,     2,   nil,   nil,     2,     2,     2 ]
 
 racc_goto_pointer = [
    nil,     1,     0 ]
@@ -75,28 +78,30 @@ racc_goto_default = [
 
 racc_reduce_table = [
   0, 0, :racc_error,
-  1, 9, :_reduce_none,
-  3, 10, :_reduce_2,
-  3, 10, :_reduce_3,
-  3, 10, :_reduce_4,
-  3, 10, :_reduce_5,
-  1, 10, :_reduce_6 ]
+  1, 10, :_reduce_none,
+  3, 11, :_reduce_2,
+  3, 11, :_reduce_3,
+  3, 11, :_reduce_4,
+  3, 11, :_reduce_5,
+  2, 11, :_reduce_6,
+  1, 11, :_reduce_7 ]
 
-racc_reduce_n = 7
+racc_reduce_n = 8
 
-racc_shift_n = 15
+racc_shift_n = 17
 
 racc_token_table = {
   false => 0,
   :error => 1,
-  "<->" => 2,
-  "&" => 3,
-  "|" => 4,
-  "(" => 5,
-  ")" => 6,
-  :TERM => 7 }
+  "!" => 2,
+  "<->" => 3,
+  "&" => 4,
+  "|" => 5,
+  "(" => 6,
+  ")" => 7,
+  :TERM => 8 }
 
-racc_nt_base = 8
+racc_nt_base = 9
 
 racc_use_result_var = true
 
@@ -119,6 +124,7 @@ Racc_arg = [
 Racc_token_to_s_table = [
   "$end",
   "error",
+  "\"!\"",
   "\"<->\"",
   "\"&\"",
   "\"|\"",
@@ -137,37 +143,44 @@ Racc_debug_parser = false
 
 # reduce 1 omitted
 
-module_eval(<<'.,.,', 'interpreter.y', 9)
-  def _reduce_2(val, _values, result)
-     result &= val[2] 
-    result
-  end
-.,.,
-
 module_eval(<<'.,.,', 'interpreter.y', 10)
-  def _reduce_3(val, _values, result)
-     result |= val[2] 
+  def _reduce_2(val, _values, result)
+     result &= val[2]  
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'interpreter.y', 11)
+  def _reduce_3(val, _values, result)
+     result |= val[2]  
+    result
+  end
+.,.,
+
+module_eval(<<'.,.,', 'interpreter.y', 12)
   def _reduce_4(val, _values, result)
      result >>= val[2] 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'interpreter.y', 12)
+module_eval(<<'.,.,', 'interpreter.y', 13)
   def _reduce_5(val, _values, result)
-     result = val[1] 
+     result = val[1]   
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'interpreter.y', 13)
+module_eval(<<'.,.,', 'interpreter.y', 14)
   def _reduce_6(val, _values, result)
-     result = val[0] 
+     result = !val[1]  
+    result
+  end
+.,.,
+
+module_eval(<<'.,.,', 'interpreter.y', 15)
+  def _reduce_7(val, _values, result)
+     result = val[0]   
     result
   end
 .,.,

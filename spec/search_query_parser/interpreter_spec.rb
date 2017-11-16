@@ -7,7 +7,7 @@ describe SearchQueryParser::Interpreter do
     end
 
     it 'parses complex expressions' do
-      expect(@f.("a b&c|d e&(f|g)").to_s).to eq "(((a <-> b) & c) | ((d <-> e) & (f | g)))"
+      expect(@f.("a b&c|d e&(f|!g)").to_s).to eq "(((a <-> b) & c) | ((d <-> e) & (f | (! g))))"
     end
   end
 end

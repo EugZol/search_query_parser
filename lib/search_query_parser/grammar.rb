@@ -4,10 +4,10 @@ module SearchQueryParser
       text.
         gsub(/[&]+/, '&').
         gsub(/[|]+/, '|').
-        gsub(/[^[:alnum:]\-()&|]+/, ' ').
+        gsub(/[^[:alnum:]\-()&|!]+/, ' ').
         gsub(/([^[:alnum:]]|^)\-/, '\1').
         gsub(/\-([^[:alnum:]]|$)/, '\1').
-        gsub(/ ?([|&]) /, '\1').
+        gsub(/ ?([|&!]) /, '\1').
         gsub(/ ?([()]) ?/, '\1').
         strip
     end
@@ -45,13 +45,23 @@ module SearchQueryParser
       self.or(other)
     end
 
-    # Block to reduce must be given and accept (op, x, y) or (term, x), returning
-    # the result of applying "x `op` y" or "term x"
+    def not
+      self.class.new([:not, self])
+    end
+    def !
+      self.not
+    end
+
+    # Block to reduce must be given and accept
+    # (op, x, y), (term, x), (not, x)
+    # and return the result of applying op to (x, y) or x (for 'term' and 'not')
     def reduce(&block)
       op, x, y = @expression
       case op
       when :term
         yield(:term, x, nil)
+      when :not
+        yield(:not, x.reduce(&block), nil)
       when :and
         yield(:and, x.reduce(&block), y.reduce(&block))
       when :or
@@ -74,6 +84,8 @@ module SearchQueryParser
           "(#{x} | #{y})"
         when :join
           "(#{x} <-> #{y})"
+        when :not
+          "(! #{x})"
         end
       end
     end

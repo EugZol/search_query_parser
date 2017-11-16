@@ -37,8 +37,8 @@ describe SearchQueryParser::Grammar do
     end
 
     it "correctly represents a combination of AND, OR, JOIN and TERMs" do
-      expression = (@c.("a") >> @c.("b")) & @c.("c") | (@c.("d") >> @c.("e"))
-      expect(expression.to_s).to eq "(((a <-> b) & c) | (d <-> e))"
+      expression = (@c.("a") >> @c.("b")) & @c.("c") | (@c.("d") >> !@c.("e"))
+      expect(expression.to_s).to eq "(((a <-> b) & c) | (d <-> (! e)))"
     end
   end
 end

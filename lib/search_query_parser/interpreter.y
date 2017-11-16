@@ -1,5 +1,6 @@
 class SearchQueryParser::Interpreter
   prechigh
+    nonassoc '!'
     left '<->'
     left '&'
     left '|'
@@ -7,11 +8,12 @@ class SearchQueryParser::Interpreter
 rule
   target: exp
 
-  exp: exp '&' exp   { result &= val[2] }
-     | exp '|' exp   { result |= val[2] }
+  exp: exp '&' exp   { result &= val[2]  }
+     | exp '|' exp   { result |= val[2]  }
      | exp '<->' exp { result >>= val[2] }
-     | '(' exp ')'   { result = val[1] }
-     | TERM          { result = val[0] }
+     | '(' exp ')'   { result = val[1]   }
+     | '!' exp       { result = !val[1]  }
+     | TERM          { result = val[0]   }
 end
 
 ---- header
@@ -24,7 +26,8 @@ class SearchQueryParser::ParseError < ArgumentError; end
 
   def parse(str)
     @q = []
-    str.scan(/[[:alnum:]\-]+|[&|()\s]/) do |token|
+    str = SearchQueryParser::Grammar.prepare_text(str)
+    str.scan(/[[:alnum:]\-]+|[&|()!\s]/) do |token|
       case token
       when /[[:alnum:]\-]+/
         @q.push [:TERM, SearchQueryParser::Grammar.new(token)]
