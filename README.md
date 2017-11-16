@@ -1,4 +1,4 @@
-# SearchQueryParser
+# Search Query Parser
 
 This gem allows you to create PostgreSQL 9.6 compatible ts_query expressions from simple-to-use "query language".
 

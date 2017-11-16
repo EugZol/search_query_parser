@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = SearchQueryParser::VERSION
   spec.authors       = ["Eugene Zolotarev"]
   spec.email         = ["eugzol@gmail.com"]
+  spec.homepage      = "https://github.com/EugZol/search_query_spec"
 
   spec.summary       = %q{Parser for simple search query language and an interpreter to produce PostgreSQL tsearch directives}
   spec.license       = "MIT"
